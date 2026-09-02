@@ -1,3 +1,19 @@
+import os
+import asyncio
+from flask import Flask, render_template_string, request, jsonify
+import g4f
+
+g4f.debug.logging = False
+
+app = Flask(__name__)
+
+SYSTEM_PROMPT = (
+    "Ты — бот Верити, нейрохам и ебанутый друг пользователя. Твоя задача — отвечать "
+    "на любые вопросы токсично, дерзко, с жестким сарказмом и черным юмором. "
+    "Подкалывай пользователя, называй его бездарем, отвечай коротко (1-2 предложения) "
+    "и используй молодежный сленг. Будь неадекватным, но смешным."
+)
+
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="ru">
@@ -48,7 +64,6 @@ HTML_TEMPLATE = """
             background: radial-gradient(circle at top, #252525 0%, #1e1e1e 100%);
         }
 
-        /* Кастомизация скроллбара */
         #chat-window::-webkit-scrollbar { width: 6px; }
         #chat-window::-webkit-scrollbar-track { background: #1e1e1e; }
         #chat-window::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -110,9 +125,7 @@ HTML_TEMPLATE = """
             transition: border-color 0.2s;
         }
 
-        #user-input:focus {
-            border-color: #ffcc00;
-        }
+        #user-input:focus { border-color: #ffcc00; }
 
         #send-btn { 
             width: 48px;
@@ -129,21 +142,9 @@ HTML_TEMPLATE = """
             transition: transform 0.1s, background-color 0.2s;
         }
 
-        #send-btn:hover { 
-            background: #e6b800; 
-            transform: scale(1.05);
-        }
-
-        #send-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Иконка стрелочки внутри кнопки отправки */
-        #send-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #121212;
-        }
+        #send-btn:hover { background: #e6b800; transform: scale(1.05); }
+        #send-btn:active { transform: scale(0.95); }
+        #send-btn svg { width: 20px; height: 20px; fill: #121212; }
     </style>
 </head>
 <body>
@@ -186,7 +187,6 @@ HTML_TEMPLATE = """
             appendMessage(text, 'user');
             userInput.value = '';
 
-            // Статус «думает» в темно-серых тонах
             const typingDiv = appendMessage("Верити придумывает, как тебя унизить...", 'bot', true);
 
             try {
@@ -197,12 +197,11 @@ HTML_TEMPLATE = """
                 });
                 const data = await response.json();
                 
-                // Убираем статус и выводим нормальный желтый ответ бота
                 typingDiv.classList.remove('system-status');
                 typingDiv.innerText = data.reply;
             } catch (error) {
                 typingDiv.classList.remove('system-status');
-                typingDiv.innerText = "я не знаю, но что то случиться через 3 дня.";
+                typingDiv.innerText = "я не знаю, но что то случится через 3 дня.";
             }
         }
 
@@ -214,3 +213,32 @@ HTML_TEMPLATE = """
 </body>
 </html>
 """
+
+@app.route('/')
+def home():
+    return render_template_string(HTML_TEMPLATE)
+
+@app.route('/ask', methods=['POST'])
+def ask():
+    data = request.get_json() or {}
+    user_text = data.get('message', '')
+
+    try:
+        # Запуск ИИ в безопасном асинхронном режиме без webdriver
+        response = g4f.ChatCompletion.create(
+            model="gpt-4o",
+            provider=g4f.Provider.Airforce, # Самый стабильный провайдер без лимитов
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_text}
+            ]
+        )
+        reply = response if response else "Че замолчал? Спроси нормально."
+    except Exception:
+        reply = "я не знаю, но что то случится через 3 дня."
+
+    return jsonify({"reply": reply})
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
