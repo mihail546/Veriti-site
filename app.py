@@ -1,14 +1,15 @@
 import os
-import asyncio
 from flask import Flask, render_template_string, request, jsonify
 import g4f
 
+# Отключаем фоновый браузер для стабильной работы на сервере
 g4f.debug.logging = False
 
 app = Flask(__name__)
 
+# Возвращаем злой и дерзкий характер, убрав упоминания АП
 SYSTEM_PROMPT = (
-    "Ты — бот Верити, нейрохам и ебанутый друг пользователя. Твоя задача — отвечать "
+    "Ты — бот Верити, ебанутый и очень злой друг пользователя. Твоя задача — отвечать "
     "на любые вопросы токсично, дерзко, с жестким сарказмом и черным юмором. "
     "Подкалывай пользователя, называй его бездарем, отвечай коротко (1-2 предложения) "
     "и используй молодежный сленг. Будь неадекватным, но смешным."
@@ -20,7 +21,7 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Верити — Нейрохам</title>
+    <title>Верити — Твой Друг</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
@@ -149,14 +150,14 @@ HTML_TEMPLATE = """
 </head>
 <body>
 
-    <h2>Верити // Нейрохам</h2>
+    <h2>Верити // Онлайн</h2>
     
     <div id="chat-container">
         <div id="chat-window">
             <div class="message bot">Че надо, бездарь? Спрашивай свою глупость, я жду.</div>
         </div>
         <div id="input-area">
-            <input type="text" id="user-input" placeholder="Напиши что-нибудь токсичное..." autocomplete="off">
+            <input type="text" id="user-input" placeholder="Напиши что-нибудь..." autocomplete="off">
             <button id="send-btn" title="Отправить">
                 <svg viewBox="0 0 24 24">
                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
@@ -187,7 +188,7 @@ HTML_TEMPLATE = """
             appendMessage(text, 'user');
             userInput.value = '';
 
-            const typingDiv = appendMessage("Верити придумывает, как тебя унизить...", 'bot', true);
+            const typingDiv = appendMessage("Верити думает, как тебя разнести...", 'bot', true);
 
             try {
                 const response = await fetch('/ask', {
@@ -224,10 +225,10 @@ def ask():
     user_text = data.get('message', '')
 
     try:
-        # Запуск ИИ в безопасном асинхронном режиме без webdriver
+        # Используем Pizzagpt и Airforce как основные безотказные провайдеры для ИИ
         response = g4f.ChatCompletion.create(
             model="gpt-4o",
-            provider=g4f.Provider.Airforce, # Самый стабильный провайдер без лимитов
+            provider=g4f.Provider.Pizzagpt,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_text}
@@ -235,7 +236,18 @@ def ask():
         )
         reply = response if response else "Че замолчал? Спроси нормально."
     except Exception:
-        reply = "я не знаю, но что то случится через 3 дня."
+        try:
+            response = g4f.ChatCompletion.create(
+                model="gpt-4o",
+                provider=g4f.Provider.Airforce,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_text}
+                ]
+            )
+            reply = response if response else "Че замолчал? Спроси нормально."
+        except Exception:
+            reply = "я не знаю, но что то случится через 3 дня."
 
     return jsonify({"reply": reply})
 
