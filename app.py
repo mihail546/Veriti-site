@@ -42,8 +42,6 @@ def ask():
     except:
         pass
         
-    # Больше никаких надписей "Ошибка сети/кода". Чисто ответ от имени Верити
-    return jsonify({"reply": "Че замолчал? Спроси нормально, я жду."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
