@@ -1,11 +1,10 @@
 import os
 from flask import Flask, render_template_string, request, jsonify
-import g4f
-
-g4f.debug.logging = False
+import requests
 
 app = Flask(__name__)
 
+# Промпт без упоминания АП, характер злой и угарный, как ты и хотел
 SYSTEM_PROMPT = (
     "Ты — бот Верити, ебанутый и очень злой друг пользователя. Твоя задача — отвечать "
     "на любые вопросы токсично, дерзко, с жестким сарказмом и черным юмором. "
@@ -33,7 +32,6 @@ HTML_TEMPLATE = """
             min-height: 100vh;
             padding: 20px;
         }
-        
         h2 {
             color: #ffcc00;
             margin-bottom: 15px;
@@ -42,7 +40,6 @@ HTML_TEMPLATE = """
             letter-spacing: 2px;
             text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
         }
-
         #chat-container { 
             width: 100%; 
             max-width: 550px; 
@@ -52,7 +49,6 @@ HTML_TEMPLATE = """
             box-shadow: 0 8px 32px rgba(0,0,0,0.7);
             border: 1px solid #2d2d2d;
         }
-
         #chat-window { 
             height: 450px; 
             padding: 20px; 
@@ -62,12 +58,10 @@ HTML_TEMPLATE = """
             gap: 12px;
             background: radial-gradient(circle at top, #252525 0%, #1e1e1e 100%);
         }
-
         #chat-window::-webkit-scrollbar { width: 6px; }
         #chat-window::-webkit-scrollbar-track { background: #1e1e1e; }
         #chat-window::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         #chat-window::-webkit-scrollbar-thumb:hover { background: #ffcc00; }
-
         .message { 
             padding: 12px 16px; 
             border-radius: 14px; 
@@ -75,9 +69,7 @@ HTML_TEMPLATE = """
             word-wrap: break-word; 
             font-size: 15px;
             line-height: 1.4;
-            transition: all 0.2s ease;
         }
-
         .user { 
             background-color: #2d2d2d; 
             color: #ffffff;
@@ -85,7 +77,6 @@ HTML_TEMPLATE = """
             border-bottom-right-radius: 2px;
             border: 1px solid #3d3d3d;
         }
-
         .bot { 
             background-color: #ffcc00; 
             color: #121212;
@@ -94,16 +85,12 @@ HTML_TEMPLATE = """
             font-weight: 600;
             box-shadow: 0 2px 8px rgba(255, 204, 0, 0.2);
         }
-
         .system-status {
             background-color: transparent !important;
             color: #888888 !important;
             border: 1px dashed #444;
             font-style: italic;
-            font-weight: normal !important;
-            box-shadow: none !important;
         }
-
         #input-area { 
             display: flex; 
             background: #121212;
@@ -111,7 +98,6 @@ HTML_TEMPLATE = """
             gap: 10px;
             border-top: 1px solid #2d2d2d;
         }
-
         #user-input { 
             flex: 1; 
             padding: 14px 20px; 
@@ -121,11 +107,8 @@ HTML_TEMPLATE = """
             color: #fff; 
             outline: none; 
             font-size: 15px;
-            transition: border-color 0.2s;
         }
-
         #user-input:focus { border-color: #ffcc00; }
-
         #send-btn { 
             width: 48px;
             height: 48px;
@@ -134,15 +117,10 @@ HTML_TEMPLATE = """
             border-radius: 50%;
             color: #121212; 
             cursor: pointer; 
-            font-weight: bold; 
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.1s, background-color 0.2s;
         }
-
-        #send-btn:hover { background: #e6b800; transform: scale(1.05); }
-        #send-btn:active { transform: scale(0.95); }
         #send-btn svg { width: 20px; height: 20px; fill: #121212; }
     </style>
 </head>
@@ -222,30 +200,28 @@ def ask():
     data = request.get_json() or {}
     user_text = data.get('message', '')
 
+    # Напрямую отправляем запрос к бесплатному серверу ИИ без капризных библиотек
+    api_url = "https://huggingface.co"
+    headers = {"Content-Type": "application/json"}
+    
+    prompt = f"<|im_start|>system\n{SYSTEM_PROMPT}<|im_end|>\n<|im_start|>user\n{user_text}<|im_end|>\n<|im_start|>assistant\n"
+    payload = {
+        "inputs": prompt,
+        "parameters": {"max_new_tokens": 100, "temperature": 0.8}
+    }
+
     try:
-        # Используем Pizzagpt и Airforce как основные безотказные провайдеры для ИИ
-        response = g4f.ChatCompletion.create(
-            model="gpt-4o",
-            provider=g4f.Provider.Pizzagpt,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_text}
-            ]
-        )
-        reply = response if response else "Че замолчал? Спроси нормально."
+        response = requests.post(api_url, headers=headers, json=payload, timeout=10)
+        res_json = response.json()
+        
+        if isinstance(res_json, list) and "generated_text" in res_json[0]:
+            full_text = res_json[0]["generated_text"]
+            # Отрезаем промпт, оставляя только чистый ответ ИИ
+            reply = full_text.split("<|im_start|>assistant\n")[-1].replace("<|im_end|>", "").strip()
+        else:
+            reply = "Че замолчал? Спроси нормально."
     except Exception:
-        try:
-            response = g4f.ChatCompletion.create(
-                model="gpt-4o",
-                provider=g4f.Provider.Airforce,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_text}
-                ]
-            )
-            reply = response if response else "Че замолчал? Спроси нормально."
-        except Exception:
-            reply = "я не знаю, но что то случится через 3 дня."
+        reply = "я не знаю, но что то случится через 3 дня."
 
     return jsonify({"reply": reply})
 
