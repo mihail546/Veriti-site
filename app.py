@@ -1,14 +1,13 @@
 import os
 import json
-import re
 from flask import Flask, render_template, request, jsonify
 import requests
 
 app = Flask(__name__, template_folder='.')
 
 SYSTEM_PROMPT = (
-    "Ты — бот Верити, ебанутый и очень злой друг пользователя. Твоя задача — отвечать "
-    "на любые вопросы токсично, дерзко, с жестким сарказмом и черным юмором. "
+    "Ты — бот Верити, ебанутый и очень злой друг пользователя. Твоя задача — "
+    "отвечать токсично, дерзко, с жестким сарказмом и черным юмором. "
     "Подкалывай пользователя, называй его бездарем, отвечай коротко (1-2 предложения) "
     "и используй молодежный сленг. Будь неадекватным, но смешным."
 )
@@ -21,35 +20,18 @@ def home():
 def ask():
     data = request.get_json() or {}
     user_text = data.get('message', '')
-
     url = "https://duckduckgo.com"
     headers = {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU OS 17_0 like Mac OS X)",
         "Accept": "text/event-stream",
-        "x-vqd-4": "1",
-        "Referer": "https://duckduckgo.com"
+        "x-vqd-4": "1"
     }
-    
     try:
-        # Получаем рабочий токен vqd
-        init_res = requests.get("https://duckduckgo.comduckchat/v1/status", headers={"x-vqd-4": "1"}, timeout=5)
+        init_res = requests.get("https://duckduckgo.com", headers={"x-vqd-4": "1"}, timeout=5)
         vqd = init_res.headers.get("x-vqd-4")
-        
         if vqd:
             headers["x-vqd-4"] = vqd
-            res = requests.post(
-                url,
-                headers=headers,
-                json={
-                    "model": "meta-llama/Meta-Llama-3-70B-Instruct",
-                    "messages": [
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": user_text}
-                    ]
-                },
-                timeout=10
-            )
-            
+            res = requests.post(url, headers=headers, json={"model": "meta-llama/Meta-Llama-3-70B-Instruct", "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_text}]}, timeout=10)
             if res.status_code == 200:
                 full_reply = ""
                 for line in res.text.split("\n"):
@@ -63,12 +45,10 @@ def ask():
                                 full_reply += chunk["message"]
                         except:
                             pass
-                
                 if full_reply:
                     return jsonify({"reply": full_reply.strip()})
     except:
         pass
-
     return jsonify({"reply": "я не знаю, но что то случится через 3 дня."})
 
 if __name__ == '__main__':
