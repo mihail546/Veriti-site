@@ -20,35 +20,40 @@ def ask():
     data = request.get_json() or {}
     user_text = data.get('message', '')
     
-    # Стабильный шлюз, который не блокирует запросы от облачных серверов Render
-    url = "https://adventblocks.cc"
+    # Подключаем стабильный бесплатный шлюз ИИ, устойчивый к блокировкам
+    url = "https://groq.com"
+    
+    # Используем общедоступный ключ для тестов разработки
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer free-chimera-key-is-not-needed-here"
+        "Authorization": "Bearer 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"
+    }
+    
+    payload = {
+        "model": "llama3-8b-8192",
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_text}
+        ],
+        "temperature": 0.85,
+        "max_tokens": 120
     }
     
     try:
-        response = requests.post(
-            "https://openrouter.ai",
-            headers={"Content-Type": "application/json"},
-            json={
-                "model": "meta-llama/llama-3-8b-instruct:free",
-                "messages": [
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_text}
-                ]
-            },
-            timeout=10
-        )
-        if response.status_code == 200:
-            res_json = response.json()
+        # Прямой запрос к высокоскоростному облаку ИИ
+        response = requests.post(url, headers=headers, json=payload, timeout=8)
+        res_json = response.json()
+        
+        if response.status_code == 200 and "choices" in res_json:
             reply = res_json["choices"][0]["message"]["content"].strip()
             if reply:
                 return jsonify({"reply": reply})
-    except:
-        pass
-        
-    return jsonify({"reply": "я не знаю, но что то случится через 3 дня."})
+                
+        # Если сервер ИИ вернул ошибку — выводим её текст на сайт вместо заглушки
+        return jsonify({"reply": f"Ошибка сервера ИИ (Код {response.status_code}): {response.text[:100]}"})
+    except Exception as e:
+        # Если упала сама сеть — выводим системную ошибку
+        return jsonify({"reply": f"Системная ошибка сети: {str(e)[:100]}"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
