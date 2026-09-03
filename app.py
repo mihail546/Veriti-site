@@ -1,5 +1,4 @@
 import os
-import json
 from flask import Flask, render_template, request, jsonify
 import requests
 
@@ -20,35 +19,28 @@ def home():
 def ask():
     data = request.get_json() or {}
     user_text = data.get('message', '')
-    url = "https://duckduckgo.com"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU OS 17_0 like Mac OS X)",
-        "Accept": "text/event-stream",
-        "x-vqd-4": "1"
+    
+    # Прямой и стабильный шлюз к мощному бесплатному ИИ
+    api_url = "https://huggingface.co"
+    headers = {"Content-Type": "application/json"}
+    
+    prompt = f"<|im_start|>system\n{SYSTEM_PROMPT}<|im_end|>\n<|im_start|>user\n{user_text}<|im_end|>\n<|im_start|>assistant\n"
+    payload = {
+        "inputs": prompt,
+        "parameters": {"max_new_tokens": 100, "temperature": 0.85}
     }
+    
     try:
-        init_res = requests.get("https://duckduckgo.com", headers={"x-vqd-4": "1"}, timeout=5)
-        vqd = init_res.headers.get("x-vqd-4")
-        if vqd:
-            headers["x-vqd-4"] = vqd
-            res = requests.post(url, headers=headers, json={"model": "meta-llama/Meta-Llama-3-70B-Instruct", "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_text}]}, timeout=10)
-            if res.status_code == 200:
-                full_reply = ""
-                for line in res.text.split("\n"):
-                    if line.startswith("data: "):
-                        data_str = line[6:].strip()
-                        if data_str == "[DONE]":
-                            break
-                        try:
-                            chunk = json.loads(data_str)
-                            if "message" in chunk:
-                                full_reply += chunk["message"]
-                        except:
-                            pass
-                if full_reply:
-                    return jsonify({"reply": full_reply.strip()})
+        response = requests.post(api_url, headers=headers, json=payload, timeout=10)
+        res_json = response.json()
+        if isinstance(res_json, list) and "generated_text" in res_json[0]:
+            full_text = res_json[0]["generated_text"]
+            reply = full_text.split("<|im_start|>assistant\n")[-1].replace("<|im_end|>", "").strip()
+            if reply:
+                return jsonify({"reply": reply})
     except:
         pass
+        
     return jsonify({"reply": "я не знаю, но что то случится через 3 дня."})
 
 if __name__ == '__main__':
