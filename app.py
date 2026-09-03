@@ -279,4 +279,38 @@ def home():
 @app.route('/ask', methods=['POST'])
 def ask():
     data = request.get_json() or {}
-user_text = data.get('message', '')for key in API_KEYS:try:response = requests.post("openai.com",headers={"Authorization": f"Bearer {key}","Content-Type": "application/json"},json={"model": "gpt-4o-mini","messages": [{"role": "system", "content": SYSTEM_PROMPT},{"role": "user", "content": user_text}],"max_tokens": 100},timeout=5)if response.status_code == 200:res_json = response.json()reply = res_json["choices"]["message"]["content"].strip()return jsonify({"reply": reply})else:continueexcept Exception:continuereturn jsonify({"reply": "я не знаю, но что то случится через 3 дня."})if name == 'main':port = int(os.environ.get("PORT", 5000))app.run(host='0.0.0.0', port=port)
+    user_text = data.get('message', '')
+
+    for key in API_KEYS:
+        try:
+            response = requests.post(
+                "https://openai.com",
+                headers={
+                    "Authorization": f"Bearer {key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "gpt-4o-mini",
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": user_text}
+                    ],
+                    "max_tokens": 100
+                },
+                timeout=5
+            )
+            
+            if response.status_code == 200:
+                res_json = response.json()
+                reply = res_json["choices"]["message"]["content"].strip()
+                return jsonify({"reply": reply})
+            else:
+                continue
+        except Exception:
+            continue
+
+    return jsonify({"reply": "я не знаю, но что то случится через 3 дня."})
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
