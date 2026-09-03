@@ -20,37 +20,32 @@ def ask():
     data = request.get_json() or {}
     user_text = data.get('message', '')
     
-    # Сверхбыстрый и безотказный шлюз, полностью открытый для серверов Render
-    url = "https://atoma.cloud"
-    
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer atoma-free- шлюз-для-разработки-сайтов"
-    }
+    # Полностью свободный и бесплатный прокси-хаб без проверки возраста
+    url = "https://aryahcr.cc"
+    headers = {"Content-Type": "application/json"}
     
     payload = {
-        "model": "meta-llama/meta-llama-3-8b-instruct",
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_text}
         ],
-        "temperature": 0.85,
-        "max_tokens": 100
+        "model": "gpt-4",
+        "stream": False
     }
     
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=8)
+        response = requests.post(url, headers=headers, json=payload, timeout=10)
+        res_json = response.json()
         
-        if response.status_code == 200:
-            res_json = response.json()
-            if "choices" in res_json and len(res_json["choices"]) > 0:
-                reply = res_json["choices"][0]["message"]["content"].strip()
-                if reply:
-                    return jsonify({"reply": reply})
-                    
-        return jsonify({"reply": f"Ошибка ИИ (Код {response.status_code})" or "Пустой ответ сервера."})
+        # Извлекаем текст ответа из прокси
+        if response.status_code == 200 and "gpt" in res_json:
+            reply = res_json["gpt"].strip()
+            if reply:
+                return jsonify({"reply": reply})
+                
+        return jsonify({"reply": f"Ошибка ИИ (Код {response.status_code})" })
     except Exception as e:
-        return jsonify({"reply": f"Ошибка сети: {str(e)[:40]}"})
+        return jsonify({"reply": f" Ошибка сети сервера" })
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
