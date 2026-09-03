@@ -1,29 +1,21 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #000000; color: #ffffff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-
-/* Общая фиксированная шапка */
-.main-header { position: fixed; top: 0; width: 100%; height: 75px; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.header-info h1 { font-size: 18px; font-weight: 600; }
+.main-header { position: fixed; top: 0; width: 100%; height: 60px; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+.header-info h1 { font-size: 17px; font-weight: 600; }
 .header-info .status { font-size: 11px; margin-top: 1px; }
-
-/* Меню выбора дизайна — теперь с абсолютным приоритетом видимости */
-.theme-select { background: rgba(255, 204, 0, 0.15); border: 1px solid #ffcc00; color: #ffcc00; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; z-index: 102; position: relative; }
+.theme-select { background: rgba(255, 204, 0, 0.15); border: 1px solid #ffcc00; color: #ffcc00; padding: 5px 10px; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; z-index: 105; }
 .theme-select option { background: #1c1c1e; color: #fff; }
-
-/* ИСПРАВЛЕНО: Скролл и отступы сверху для вывода сообщений из-под шапки */
-#chat-window { flex: 1; margin-top: 85px; margin-bottom: 95px; padding: 16px; overflow-y: scroll !important; display: flex; flex-direction: column; gap: 12px; height: calc(100vh - 180px) !important; -webkit-overflow-scrolling: touch !important; position: relative; z-index: 1; }
-.message { padding: 11px 16px; border-radius: 20px; max-width: 78%; word-wrap: break-word; font-size: 16px; line-height: 1.4; display: block; clear: both; }
-
-/* Фиксированная нижняя панель ввода */
-#input-panel { position: fixed; bottom: 0; width: 100%; height: 90px; padding: 10px 12px 30px 12px; z-index: 100; }
-.input-container { display: flex; border-radius: 22px; padding: 4px 4px 4px 16px; align-items: center; width: 100%; height: 40px; }
+#chat-window { flex: 1; margin-top: 60px; margin-bottom: 75px; padding: 16px; overflow-y: auto !important; display: flex; flex-direction: column; gap: 12px; height: calc(100vh - 135px) !important; -webkit-overflow-scrolling: touch !important; position: relative; z-index: 1; }
+.message { padding: 10px 16px; border-radius: 20px; max-width: 78%; word-wrap: break-word; font-size: 15px; line-height: 1.4; display: block; clear: both; }
+#input-panel { position: fixed; bottom: 0; width: 100%; height: 75px; padding: 10px 12px 25px 12px; z-index: 100; }
+.input-container { display: flex; border-radius: 22px; padding: 4px 4px 4px 16px; align-items: center; width: 100%; height: 36px; }
 #user-input { flex: 1; border: none; background: transparent; color: #ffffff; outline: none; font-size: 16px; height: 100%; }
-#send-btn { width: 32px; height: 32px; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#send-btn { width: 28px; height: 28px; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .system-status { background-color: transparent !important; color: #8e8e93 !important; font-size: 13px; align-self: center; text-align: center; width: 100%; }
 
 /* ТЕМА: iOS */
 html[data-theme="ios"] body { background: #000000; }
-html[data-theme="ios"] .main-header { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid #2c2c2e; }
+html[data-theme="ios"] .main-header { background: rgba(20, 20, 20, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid #2c2c2e; }
 html[data-theme="ios"] .header-info h1 { color: #ffcc00; }
 html[data-theme="ios"] .header-info .status { color: #8e8e93; }
 html[data-theme="ios"] #chat-window { background: #121212; }
@@ -33,9 +25,9 @@ html[data-theme="ios"] #input-panel { background: rgba(20, 20, 20, 0.85); backdr
 html[data-theme="ios"] .input-container { background: #1c1c1e; border: 0.5px solid #2c2c2e; }
 html[data-theme="ios"] #send-btn { background: #ffcc00; color: #000; }
 
-/* ТЕМА: ПРОСТОЙ (CYBERPUNK) */
+/* ТЕМА: ПРОСТОЙ */
 html[data-theme="cyberpunk"] body { background: #121212; }
-html[data-theme="cyberpunk"] .main-header { background: #1e1e1e; border-bottom: 2px solid #ffcc00; height: 75px; }
+html[data-theme="cyberpunk"] .main-header { background: #1e1e1e; border-bottom: 2px solid #ffcc00; }
 html[data-theme="cyberpunk"] .header-info h1 { color: #ffcc00; font-weight: 700; text-transform: uppercase; }
 html[data-theme="cyberpunk"] .header-info .status { color: #ffcc00; }
 html[data-theme="cyberpunk"] #chat-window { background: #1a1a1a; }
