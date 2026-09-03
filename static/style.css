@@ -1,0 +1,53 @@
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #000000; color: #ffffff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.main-header { position: fixed; top: 0; width: 100%; height: 65px; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+.header-info h1 { font-size: 17px; font-weight: 600; }
+.header-info .status { font-size: 11px; margin-top: 1px; }
+.theme-select { background: rgba(255, 204, 0, 0.15); border: 1px solid #ffcc00; color: #ffcc00; padding: 6px 10px; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; }
+.theme-select option { background: #1c1c1e; color: #fff; }
+#chat-window { flex: 1; margin-top: 65px; margin-bottom: 90px; padding: 16px; overflow-y: scroll; display: flex; flex-direction: column; gap: 12px; height: calc(100vh - 155px); -webkit-overflow-scrolling: touch; }
+.message { padding: 11px 16px; border-radius: 20px; max-width: 78%; word-wrap: break-word; font-size: 16px; line-height: 1.4; }
+#input-panel { position: fixed; bottom: 0; width: 100%; height: 90px; padding: 10px 12px 30px 12px; z-index: 100; }
+.input-container { display: flex; border-radius: 22px; padding: 4px 4px 4px 16px; align-items: center; width: 100%; height: 40px; }
+#user-input { flex: 1; border: none; background: transparent; color: #ffffff; outline: none; font-size: 16px; height: 100%; }
+#send-btn { width: 32px; height: 32px; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.system-status { background-color: transparent !important; color: #8e8e93 !important; font-size: 13px; align-self: center; text-align: center; }
+
+/* ТЕМА: iOS */
+html[data-theme="ios"] body { background: #000000; }
+html[data-theme="ios"] .main-header { background: rgba(20, 20, 20, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid #2c2c2e; }
+html[data-theme="ios"] .header-info h1 { color: #ffcc00; }
+html[data-theme="ios"] .header-info .status { color: #8e8e93; }
+html[data-theme="ios"] #chat-window { background: #121212; }
+html[data-theme="ios"] .user { background-color: #2c2c2e; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 4px; }
+html[data-theme="ios"] .bot { background-color: #ffcc00; color: #000000; align-self: flex-start; border-bottom-left-radius: 4px; font-weight: 500; }
+html[data-theme="ios"] #input-panel { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(20px); border-top: 0.5px solid #2c2c2e; }
+html[data-theme="ios"] .input-container { background: #1c1c1e; border: 0.5px solid #2c2c2e; }
+html[data-theme="ios"] #send-btn { background: #ffcc00; color: #000; }
+
+/* ТЕМА: CYBERPUNK */
+html[data-theme="cyberpunk"] body { background: #121212; }
+html[data-theme="cyberpunk"] .main-header { background: #1e1e1e; border-bottom: 2px solid #ffcc00; }
+html[data-theme="cyberpunk"] .header-info h1 { color: #ffcc00; font-weight: 700; text-transform: uppercase; }
+html[data-theme="cyberpunk"] .header-info .status { color: #ffcc00; }
+html[data-theme="cyberpunk"] #chat-window { background: #1a1a1a; }
+html[data-theme="cyberpunk"] .message { border-radius: 4px; border: 1px solid #333; }
+html[data-theme="cyberpunk"] .user { background-color: #262626; color: #ffffff; align-self: flex-end; border-right: 3px solid #555; }
+html[data-theme="cyberpunk"] .bot { background-color: #ffcc00; color: #000000; align-self: flex-start; border-left: 3px solid #ffaa00; font-weight: 600; }
+html[data-theme="cyberpunk"] #input-panel { background: #1e1e1e; border-top: 2px solid #ffcc00; }
+html[data-theme="cyberpunk"] .input-container { background: #121212; border: 1px solid #ffcc00; border-radius: 4px; }
+html[data-theme="cyberpunk"] #send-btn { background: #ffcc00; color: #000; border-radius: 4px; }
+
+/* ТЕМА: MICROSOFT */
+html[data-theme="microsoft"] body { background: #0b0f19; }
+html[data-theme="microsoft"] .main-header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.08); }
+html[data-theme="microsoft"] .header-info h1 { color: #ffffff; font-weight: 400; }
+html[data-theme="microsoft"] .header-info .status { color: #38bdf8; }
+html[data-theme="microsoft"] .theme-select { border-color: rgba(255,255,255,0.2); color: #fff; background: rgba(255,255,255,0.05); }
+html[data-theme="microsoft"] #chat-window { background: #0f172a; }
+html[data-theme="microsoft"] .message { border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); }
+html[data-theme="microsoft"] .user { background-color: #1e293b; color: #ffffff; align-self: flex-end; }
+html[data-theme="microsoft"] .bot { background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%); color: #000000; align-self: flex-start; font-weight: 500; }
+html[data-theme="microsoft"] #input-panel { background: #0f172a; border-top: 1px solid rgba(255,255,255,0.08); }
+html[data-theme="microsoft"] .input-container { background: #1e293b; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; }
+html[data-theme="microsoft"] #send-btn { background: #ffaa00; color: #000; border-radius: 4px; }
