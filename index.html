@@ -11,7 +11,7 @@
         <div class="header-info"><h1 id="header-title">Верити</h1><div class="status">онлайн</div></div>
         <select class="theme-select" onchange="changeTheme(this.value)">
             <option value="ios">Дизайн: iOS</option>
-            <option value="cyberpunk">Дизайн: Старый</option>
+            <option value="cyberpunk">Дизайн: Простой</option>
             <option value="microsoft">Дизайн: Windows</option>
         </select>
     </div>
@@ -31,12 +31,12 @@
         function changeTheme(t) {
             document.documentElement.setAttribute('data-theme', t);
             const title = document.getElementById('header-title');
-            title.innerText = t === 'ios' ? "Верити" : t === 'cyberpunk' ? "ВЕРИТИ // ИНД" : "Верити OS";
+            title.innerText = t === 'ios' ? "Верити" : t === 'cyberpunk' ? "ВЕРИТИ // ПРОСТОЙ" : "Верити OS";
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
         function appendMessage(t, s, isS = false) {
             const m = document.createElement('div');
-            m.classList.add('message', s);
+            m.classList.add('message', sender = s);
             if (isS) m.classList.add('system-status');
             m.innerText = t;
             chatWindow.appendChild(m);
