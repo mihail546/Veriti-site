@@ -20,15 +20,11 @@ def ask():
     data = request.get_json() or {}
     user_text = data.get('message', '')
     
-    # Подключаем стабильный бесплатный шлюз ИИ, устойчивый к блокировкам
     url = "https://groq.com"
-    
-    # Используем общедоступный ключ для тестов разработки
     headers = {
         "Content-Type": "application/json",
         "Authorization": "Bearer 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"
     }
-    
     payload = {
         "model": "llama3-8b-8192",
         "messages": [
@@ -40,20 +36,15 @@ def ask():
     }
     
     try:
-        # Прямой запрос к высокоскоростному облаку ИИ
         response = requests.post(url, headers=headers, json=payload, timeout=8)
         res_json = response.json()
-        
         if response.status_code == 200 and "choices" in res_json:
-            reply = res_json["choices"][0]["message"]["content"].strip()
+            reply = res_json["choices"]["message"]["content"].strip()
             if reply:
                 return jsonify({"reply": reply})
-                
-        # Если сервер ИИ вернул ошибку — выводим её текст на сайт вместо заглушки
-        return jsonify({"reply": f"Ошибка сервера ИИ (Код {response.status_code}): {response.text[:100]}"})
+        return jsonify({"reply": f"Ошибка ИИ ({response.status_code}): {response.text[:50]}"})
     except Exception as e:
-        # Если упала сама сеть — выводим системную ошибку
-        return jsonify({"reply": f"Системная ошибка сети: {str(e)[:100]}"})
+        return jsonify({"reply": f"Ошибка сети: {str(e)[:50]}"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
