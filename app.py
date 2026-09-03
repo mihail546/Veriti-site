@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from flask import Flask, render_template, request, jsonify
 import requests
 
@@ -23,13 +24,15 @@ def ask():
 
     url = "https://duckduckgo.com"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
         "Accept": "text/event-stream",
-        "x-vqd-4": "1"
+        "x-vqd-4": "1",
+        "Referer": "https://duckduckgo.com"
     }
     
     try:
-        init_res = requests.get("https://duckduckgo.com", headers={"x-vqd-4": "1"})
+        # Получаем рабочий токен vqd
+        init_res = requests.get("https://duckduckgo.comduckchat/v1/status", headers={"x-vqd-4": "1"}, timeout=5)
         vqd = init_res.headers.get("x-vqd-4")
         
         if vqd:
@@ -44,7 +47,7 @@ def ask():
                         {"role": "user", "content": user_text}
                     ]
                 },
-                timeout=8
+                timeout=10
             )
             
             if res.status_code == 200:
