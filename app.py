@@ -20,22 +20,29 @@ def ask():
     data = request.get_json() or {}
     user_text = data.get('message', '')
     
-    # Прямой и стабильный шлюз к мощному бесплатному ИИ
-    api_url = "https://huggingface.co"
-    headers = {"Content-Type": "application/json"}
-    
-    prompt = f"<|im_start|>system\n{SYSTEM_PROMPT}<|im_end|>\n<|im_start|>user\n{user_text}<|im_end|>\n<|im_start|>assistant\n"
-    payload = {
-        "inputs": prompt,
-        "parameters": {"max_new_tokens": 100, "temperature": 0.85}
+    # Стабильный шлюз, который не блокирует запросы от облачных серверов Render
+    url = "https://adventblocks.cc"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer free-chimera-key-is-not-needed-here"
     }
     
     try:
-        response = requests.post(api_url, headers=headers, json=payload, timeout=10)
-        res_json = response.json()
-        if isinstance(res_json, list) and "generated_text" in res_json[0]:
-            full_text = res_json[0]["generated_text"]
-            reply = full_text.split("<|im_start|>assistant\n")[-1].replace("<|im_end|>", "").strip()
+        response = requests.post(
+            "https://openrouter.ai",
+            headers={"Content-Type": "application/json"},
+            json={
+                "model": "meta-llama/llama-3-8b-instruct:free",
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_text}
+                ]
+            },
+            timeout=10
+        )
+        if response.status_code == 200:
+            res_json = response.json()
+            reply = res_json["choices"][0]["message"]["content"].strip()
             if reply:
                 return jsonify({"reply": reply})
     except:
