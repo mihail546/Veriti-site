@@ -36,7 +36,7 @@
         }
         function appendMessage(t, s, isS = false) {
             const m = document.createElement('div');
-            m.classList.add('message', sender = s);
+            m.classList.add('message', s);
             if (isS) m.classList.add('system-status');
             m.innerText = t;
             chatWindow.appendChild(m);
@@ -56,7 +56,7 @@
                 typing.innerText = d.reply;
             } catch {
                 typing.classList.remove('system-status');
-                typing.innerText = "я не знаю, но что то случится через 3 дня.";
+                typing.innerText = "Ошибка соединения.";
             }
         }
         sendBtn.addEventListener('click', sendMessage);
