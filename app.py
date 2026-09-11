@@ -43,14 +43,7 @@ def ask():
         "temperature": 0.8
     }
 
-    try:
-        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=25)
-        
-        if response.status_code == 200:
-            res_json = response.json()
-            reply = res_json['choices'][0]['message']['content'].strip()
-            if reply:
-                return jsonify({"reply": reply})
+ 
 
 
 if __name__ == '__main__':
