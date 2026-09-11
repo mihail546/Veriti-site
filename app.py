@@ -52,19 +52,6 @@ def ask():
             if reply:
                 return jsonify({"reply": reply})
 
-        if response.status_code == 503:
-            return jsonify({"reply": "Модель просыпается, подожди 10 секунд и спроси ещё раз."}), 503
-
-        print(f"[HF ERROR] Status: {response.status_code}, Text: {response.text}")
-        return jsonify({"reply": f"Ошибка HF [{response.status_code}]. Проверь токен в Render."}), 500
-
-    except requests.exceptions.Timeout:
-        return jsonify({"reply": "Таймаут! Модель долго думала, попробуй ещё раз."}), 504
-        
-    except Exception as e:
-        print(f"[ERROR]: {e}")
-        return jsonify({"reply": f"Ошибка сервера: {str(e)}"}), 500
-
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
