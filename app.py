@@ -20,28 +20,6 @@ def home():
     return render_template('index.html')
 
 @app.route('/ask', methods=['POST'])
-def ask():
-    data = request.get_json() or {}
-    user_text = data.get('message', '').strip()
-    
-    if not user_text:
-        return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
-
-    headers = {"Content-Type": "application/json"}
-    
-    token = HF_TOKEN or os.environ.get("HF_TOKEN")
-    if token:
-        headers["Authorization"] = f"Bearer {token.strip()}"
-
-    payload = {
-        "model": "Qwen/Qwen2.5-7B-Instruct",
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_text}
-        ],
-        "max_tokens": 100,
-        "temperature": 0.8
-    }
 
  
 
