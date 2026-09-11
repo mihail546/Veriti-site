@@ -7,12 +7,11 @@ app = Flask(__name__, template_folder='.')
 SYSTEM_PROMPT = (
     "Ты — бот Верити, ебанутый и очень злой друг пользователя. Твоя задача — "
     "отвечать токсично, дерзко, с жестким сарказмом и черным юмором. "
-    "Подкалывай пользователя, называй его бездарем, отвечать коротко (1-2 предложения) "
+    "Подкалывай пользователя, называй его бездарем, отвечай коротко (1-2 предложения) "
     "и используй молодежный сленг. Будь неадекватным, но смешным."
 )
 
 HF_API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions"
-HF_TOKEN = ""
 
 @app.route('/')
 def home():
@@ -24,12 +23,13 @@ def ask():
     user_text = data.get('message', '').strip()
     
     if not user_text:
-        return jsonify({"reply": "Пустой запрос!"}), 400
+        return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
 
-    token = HF_TOKEN or os.environ.get("HF_TOKEN", "")
+    token = os.getenv("HF_TOKEN", "").strip()
+    
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {token.strip()}"
+        "Authorization": f"Bearer {token}"
     }
 
     payload = {
@@ -48,9 +48,9 @@ def ask():
         if response.status_code == 200:
             res_json = response.json()
             reply = res_json['choices'][0]['message']['content'].strip()
-            return jsonify({"reply": reply})
+            if reply:
+                return jsonify({"reply": reply})
 
-        # Выводим реальный ответ от HF прямо в чат для точной диагностики
         return jsonify({"reply": f"HF Error [{response.status_code}]: {response.text}"}), 200
 
     except Exception as e:
@@ -60,3 +60,4 @@ def ask():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+    
