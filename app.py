@@ -11,7 +11,7 @@ SYSTEM_PROMPT = (
     "и используй молодежный сленг. Будь неадекватным, но смешным."
 )
 
-HF_API_URL = "HF_TOKEN"
+HF_API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions"
 
 @app.route('/')
 def home():
@@ -25,9 +25,9 @@ def ask():
     if not user_text:
         return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
 
-    token = os.getenv("HF_TOKEN", "https://router.huggingface.co/hf-inference/v1/chat/completions"").strip()
+    token = os.getenv("HF_TOKEN", "").strip()
     if not token:
-        return jsonify({"reply": "Бездарь, ты забил указать HF_TOKEN в переменных окружения!"}), 500
+        return jsonify({"reply": "Бездарь, ты забил указать HF_TOKEN в настройках Render!"}), 500
 
     headers = {
         "Content-Type": "application/json",
@@ -44,6 +44,21 @@ def ask():
         "temperature": 0.8
     }
 
+    try:
+        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=25)
+        
+        if response.status_code == 200:
+            res_json = response.json()
+            choices = res_json.get('choices', [])
+            if choices:
+                reply = choices[0].get('message', {}).get('content', '').strip()
+                if reply:
+                    return jsonify({"reply": reply})
+
+        return jsonify({"reply": f"HF Error [{response.status_code}]: {response.text}"}), 200
+
+    except Exception as e:
+        return jsonify({"reply": f"Python Error: {str(e)}"}), 200
 
 
 if __name__ == '__main__':
