@@ -44,24 +44,6 @@ def ask():
         "temperature": 0.8
     }
 
-    try:
-        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=25)
-        
-        if response.status_code == 200:
-            res_json = response.json()
-            # Безопасное извлечение ответа
-            choices = res_json.get('choices', [])
-            if choices and len(choices) > 0:
-                reply = choices[0].get('message', {}).get('content', '').strip()
-                if reply:
-                    return jsonify({"reply": reply})
-
-        return jsonify({"reply": f"HF Error [{response.status_code}]: {response.text}"}), 200
-
-    except requests.exceptions.Timeout:
-        return jsonify({"reply": "HF API затупил и не ответил за 25 секунд. Попробуй еще раз."}), 200
-    except Exception as e:
-        return jsonify({"reply": f"Python Error: {str(e)}"}), 200
 
 
 if __name__ == '__main__':
