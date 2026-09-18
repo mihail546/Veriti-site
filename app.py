@@ -26,7 +26,9 @@ def ask():
         return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
 
     token = os.getenv("HF_TOKEN", "").strip()
-    
+    if not token:
+        return jsonify({"reply": "Бездарь, ты забил указать HF_TOKEN в переменных окружения!"}), 500
+
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}"
@@ -47,12 +49,17 @@ def ask():
         
         if response.status_code == 200:
             res_json = response.json()
-            reply = res_json['choices'][0]['message']['content'].strip()
-            if reply:
-                return jsonify({"reply": reply})
+            # Безопасное извлечение ответа
+            choices = res_json.get('choices', [])
+            if choices and len(choices) > 0:
+                reply = choices[0].get('message', {}).get('content', '').strip()
+                if reply:
+                    return jsonify({"reply": reply})
 
         return jsonify({"reply": f"HF Error [{response.status_code}]: {response.text}"}), 200
 
+    except requests.exceptions.Timeout:
+        return jsonify({"reply": "HF API затупил и не ответил за 25 секунд. Попробуй еще раз."}), 200
     except Exception as e:
         return jsonify({"reply": f"Python Error: {str(e)}"}), 200
 
@@ -60,4 +67,3 @@ def ask():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-    
