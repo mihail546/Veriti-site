@@ -25,17 +25,18 @@ def ask():
     if not user_text:
         return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
 
-    token = os.getenv("HF_TOKEN", "HF_TOKEN").strip()
+    token = os.getenv("HF_TOKEN", "").strip()
     if not token:
-        return jsonify({"reply": "Бездарь, ты забил указать HF_TOKEN в настройках Render!"}), 500
+        return jsonify({"reply": "Бездарь, ты забыл указать HF_TOKEN в переменной окружения!"}), 500
 
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}"
     }
 
+    # Использование альтернативной ИИ-модели Llama 3.1 8B Instruct
     payload = {
-        "model": "Qwen/Qwen2.5-7B-Instruct",
+        "model": "meta-llama/Llama-3.1-8B-Instruct",
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_text}
@@ -44,6 +45,22 @@ def ask():
         "temperature": 0.8
     }
 
+    try:
+        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=10)
+        
+        if response.status_status_code if hasattr(response, 'status_status_code') else response.status_code != 200:
+            return jsonify({"reply": f"Сервер загнулся от твоей тупости. Ошибка API: {response.status_code}"}), 500
+
+        result = response.json()
+        
+        # Извлечение ответа модели из формата OpenAI Chat Completions
+        reply = result['choices'][0]['message']['content'].strip()
+        return jsonify({"reply": reply})
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({"reply": "Ошибка соединения. Давай по новой, бездарь."}), 500
+    except (KeyError, IndexError):
+        return jsonify({"reply": "Пришел корявый ответ от ИИ. Ты даже API нормально настроить не смог."}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
