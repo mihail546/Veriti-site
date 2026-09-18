@@ -11,7 +11,7 @@ SYSTEM_PROMPT = (
     "и используй молодежный сленг. Будь неадекватным, но смешным."
 )
 
-HF_API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions"
+HF_API_URL = "HF_TOKEN"
 
 @app.route('/')
 def home():
@@ -25,7 +25,7 @@ def ask():
     if not user_text:
         return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
 
-    token = os.getenv("HF_TOKEN", "").strip()
+    token = os.getenv("HF_TOKEN", "HF_TOKEN").strip()
     if not token:
         return jsonify({"reply": "Бездарь, ты забил указать HF_TOKEN в переменных окружения!"}), 500
 
