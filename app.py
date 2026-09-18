@@ -38,7 +38,7 @@ def ask():
     }
 
     payload = {
-        "model": "deepseek/deepseek-chat-v3-0324:free", 
+        "model": "openrouter/auto", 
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_text}
