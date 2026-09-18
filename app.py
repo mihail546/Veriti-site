@@ -34,7 +34,7 @@ def ask():
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
         "HTTP-Referer": "https://veriti-site.onrender.com/", 
-        "X-Title": "Верити Бот"
+        "X-Title": "veritybot"
     }
 
     payload = {
