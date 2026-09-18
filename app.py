@@ -25,7 +25,7 @@ def ask():
     if not user_text:
         return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
 
-    token = os.getenv("HF_TOKEN", "").strip()
+    token = os.getenv("HF_TOKEN", "HF_TOKEN").strip()
     if not token:
         return jsonify({"reply": "Бездарь, ты забил указать HF_TOKEN в настройках Render!"}), 500
 
