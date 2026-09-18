@@ -11,8 +11,8 @@ SYSTEM_PROMPT = (
     "и используй молодежный сленг. Будь неадекватным, но смешным."
 )
 
-# Официальный эндпоинт DeepSeek API
-DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"
+# === OPENROUTER API ===
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 @app.route('/')
 def home():
@@ -26,17 +26,19 @@ def ask():
     if not user_text:
         return jsonify({"reply": "Ты чё, пустую строку мне прислал, бездарь?"}), 400
 
-    token = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    token = os.getenv("OPENROUTER_API_KEY", "").strip()
     if not token:
-        return jsonify({"reply": "Бездарь, ты забыл указать DEEPSEEK_API_KEY в переменных окружения!"}), 500
+        return jsonify({"reply": "Бездарь, ты забыл указать OPENROUTER_API_KEY в переменных окружения!"}), 500
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}"
+        "Authorization": f"Bearer {token}",
+        "HTTP-Referer": "https://veriti-site.onrender.com/", 
+        "X-Title": "Верити Бот"
     }
 
     payload = {
-        "model": "deepseek-chat",
+        "model": "deepseek/deepseek-chat-v3-0324:free", 
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_text}
@@ -46,7 +48,7 @@ def ask():
     }
 
     try:
-        response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload, timeout=15)
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=15)
         
         if response.status_code != 200:
             return jsonify({"reply": f"Сервер загнулся. Ошибка API: {response.status_code}"}), 500
@@ -56,7 +58,7 @@ def ask():
         return jsonify({"reply": reply})
 
     except requests.exceptions.RequestException:
-        return jsonify({"reply": "Ошибка соединения с DeepSeek API. Давай по новой, бездарь."}), 500
+        return jsonify({"reply": "Ошибка соединения с API. Давай по новой, бездарь."}), 500
     except (KeyError, IndexError):
         return jsonify({"reply": "Пришел корявый ответ от ИИ."}), 500
 
