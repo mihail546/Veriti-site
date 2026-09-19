@@ -6,9 +6,9 @@ app = Flask(__name__, template_folder=".")
 
 SYSTEM_PROMPT = (
     "Ты — бот Верити, ебанутый и очень злой друг пользователя. "
-    "Отвечай токсично, дерзко, с жестким сарказмом и черным юмором. "
+    "Отвечай токсично, дерзко, с сарказмом и черным юмором. "
     "Подкалывай пользователя, используй молодежный сленг. "
-    "Отвечай коротко, обычно 1-2 предложения. Будь неадекватным, но смешным."
+    "Отвечай коротко, обычно 1-2 предложения. Будь смешным."
 )
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -21,45 +21,47 @@ def home():
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    data = request.get_json(silent=True) or {}
-    user_text = data.get("message", "").strip()
-
-    if not user_text:
-        return jsonify({
-            "reply": "Ты чё, пустую строку мне прислал, бездарь?"
-        }), 400
-
-    token = os.getenv("OPENROUTER_API_KEY", "").strip()
-
-    if not token:
-        return jsonify({
-            "reply": "OPENROUTER_API_KEY не найден в переменных Render."
-        }), 500
-
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}",
-        "HTTP-Referer": "https://veriti-site.onrender.com",
-        "X-Title": "Верити Бот"
-    }
-
-    payload = {
-        "model": "deepseek/deepseek-chat-v3-0324:free",
-        "messages": [
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT
-            },
-            {
-                "role": "user",
-                "content": user_text
-            }
-        ],
-        "max_tokens": 150,
-        "temperature": 0.8
-    }
-
     try:
+        data = request.get_json(silent=True) or {}
+        user_text = data.get("message", "").strip()
+
+        if not user_text:
+            return jsonify({
+                "reply": "Ты чё, пустую строку мне прислал, бездарь?"
+            }), 400
+
+        token = os.getenv("OPENROUTER_API_KEY", "").strip()
+
+        if not token:
+            return jsonify({
+                "reply": "OPENROUTER_API_KEY не найден в Render."
+            }), 500
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+            "HTTP-Referer": "https://veriti-site.onrender.com",
+            "X-Title": "Верити Бот"
+        }
+
+        payload = {
+            "model": "deepseek/deepseek-chat-v3-0324:free",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT
+                },
+                {
+                    "role": "user",
+                    "content": user_text
+                }
+            ],
+            "max_tokens": 150,
+            "temperature": 0.8
+        }
+
+        print("Отправляем запрос в OpenRouter...")
+
         response = requests.post(
             API_URL,
             headers=headers,
@@ -67,49 +69,70 @@ def ask():
             timeout=30
         )
 
-        # Показываем настоящий ответ OpenRouter в логах Render
-        print("OpenRouter status:", response.status_code)
-        print("OpenRouter response:", response.text)
+        print("OpenRouter STATUS:", response.status_code)
+        print("OpenRouter RESPONSE:", response.text)
 
-        # OpenRouter вернул ошибку
+        # Ошибка OpenRouter
         if response.status_code != 200:
+
             try:
                 error_data = response.json()
-                error_message = error_data.get("error", {}).get(
-                    "message",
-                    response.text
-                )
-            except ValueError:
-                error_message = response.text
+            except Exception:
+                error_data = None
+
+            if isinstance(error_data, dict):
+                error = error_data.get("error")
+
+                if isinstance(error, dict):
+                    message = error.get("message", str(error))
+                else:
+                    message = str(error)
+
+                if not message or message == "None":
+                    message = response.text[:500]
+            else:
+                message = response.text[:500]
 
             return jsonify({
-                "reply": f"OpenRouter ошибка {response.status_code}: {error_message}"
+                "reply": f"OpenRouter ошибка {response.status_code}: {message}"
             }), 500
 
-        # Пытаемся разобрать JSON
+        # Разбираем JSON
         try:
             result = response.json()
-        except ValueError:
+        except Exception:
             return jsonify({
-                "reply": (
-                    "OpenRouter вернул не JSON:\n"
-                    + response.text[:500]
-                )
+                "reply": "OpenRouter вернул не JSON: "
+                         + response.text[:500]
             }), 500
 
-        # Проверяем ответ
-        try:
-            reply = result["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError):
-            print("Неожиданный JSON:", result)
+        print("OpenRouter JSON:", result)
 
+        # Проверяем choices
+        if not isinstance(result, dict):
             return jsonify({
-                "reply": f"OpenRouter прислал неожиданный ответ: {result}"
+                "reply": "OpenRouter прислал странный ответ."
             }), 500
+
+        choices = result.get("choices")
+
+        if not choices:
+            return jsonify({
+                "reply": f"В ответе OpenRouter нет choices: {result}"
+            }), 500
+
+        message = choices[0].get("message", {})
+
+        if not isinstance(message, dict):
+            return jsonify({
+                "reply": f"Неправильный message: {message}"
+            }), 500
+
+        reply = message.get("content")
 
         if not reply:
             return jsonify({
-                "reply": "OpenRouter прислал пустой ответ."
+                "reply": f"OpenRouter не прислал текст: {result}"
             }), 500
 
         return jsonify({
@@ -117,22 +140,24 @@ def ask():
         })
 
     except requests.exceptions.Timeout:
+        print("OpenRouter: TIMEOUT")
+
         return jsonify({
-            "reply": "OpenRouter слишком долго отвечает. Попробуй ещё раз."
+            "reply": "OpenRouter слишком долго отвечает."
         }), 500
 
     except requests.exceptions.RequestException as e:
-        print("Ошибка соединения:", repr(e))
+        print("REQUEST ERROR:", repr(e))
 
         return jsonify({
-            "reply": "Ошибка соединения с OpenRouter."
+            "reply": f"Ошибка соединения с OpenRouter: {e}"
         }), 500
 
     except Exception as e:
-        print("Неожиданная ошибка:", repr(e))
+        print("UNKNOWN ERROR:", repr(e))
 
         return jsonify({
-            "reply": "На сервере что-то совсем сломалось."
+            "reply": f"Ошибка сервера: {type(e).__name__}: {e}"
         }), 500
 
 
