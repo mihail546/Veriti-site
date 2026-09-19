@@ -41,7 +41,7 @@ def ask():
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
             "HTTP-Referer": "https://veriti-site.onrender.com",
-            "X-Title": "Верити Бот"
+            "X-Title": "Veriti Bot"
         }
 
         payload = {
@@ -60,8 +60,6 @@ def ask():
             "temperature": 0.8
         }
 
-        print("Отправляем запрос в OpenRouter...")
-
         response = requests.post(
             API_URL,
             headers=headers,
@@ -72,62 +70,38 @@ def ask():
         print("OpenRouter STATUS:", response.status_code)
         print("OpenRouter RESPONSE:", response.text)
 
-        # Ошибка OpenRouter
         if response.status_code != 200:
-
             try:
                 error_data = response.json()
-            except Exception:
-                error_data = None
-
-            if isinstance(error_data, dict):
-                error = error_data.get("error")
-
+                error = error_data.get("error", {})
+                
                 if isinstance(error, dict):
                     message = error.get("message", str(error))
                 else:
                     message = str(error)
 
-                if not message or message == "None":
-                    message = response.text[:500]
-            else:
+            except Exception:
                 message = response.text[:500]
 
             return jsonify({
                 "reply": f"OpenRouter ошибка {response.status_code}: {message}"
             }), 500
 
-        # Разбираем JSON
         try:
             result = response.json()
         except Exception:
             return jsonify({
-                "reply": "OpenRouter вернул не JSON: "
-                         + response.text[:500]
-            }), 500
-
-        print("OpenRouter JSON:", result)
-
-        # Проверяем choices
-        if not isinstance(result, dict):
-            return jsonify({
-                "reply": "OpenRouter прислал странный ответ."
+                "reply": "OpenRouter вернул не JSON."
             }), 500
 
         choices = result.get("choices")
 
         if not choices:
             return jsonify({
-                "reply": f"В ответе OpenRouter нет choices: {result}"
+                "reply": f"В ответе нет choices: {result}"
             }), 500
 
         message = choices[0].get("message", {})
-
-        if not isinstance(message, dict):
-            return jsonify({
-                "reply": f"Неправильный message: {message}"
-            }), 500
-
         reply = message.get("content")
 
         if not reply:
@@ -140,8 +114,6 @@ def ask():
         })
 
     except requests.exceptions.Timeout:
-        print("OpenRouter: TIMEOUT")
-
         return jsonify({
             "reply": "OpenRouter слишком долго отвечает."
         }), 500
@@ -150,7 +122,7 @@ def ask():
         print("REQUEST ERROR:", repr(e))
 
         return jsonify({
-            "reply": f"Ошибка соединения с OpenRouter: {e}"
+            "reply": f"Ошибка соединения: {e}"
         }), 500
 
     except Exception as e:
@@ -163,8 +135,4 @@ def ask():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-
-    app.run(
-        host="0.0.0.0",
-        port=port
-    )
+    app.run(host="0.0.0.0", port=port)
