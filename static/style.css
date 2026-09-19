@@ -15,7 +15,8 @@ body {
     overflow: hidden;
 }
 
-/* Шапка */
+/* ШАПКА */
+
 .main-header {
     position: fixed;
     top: 0;
@@ -38,7 +39,8 @@ body {
     margin-top: 1px;
 }
 
-/* Меню дизайна */
+/* МЕНЮ ДИЗАЙНА */
+
 .theme-select {
     background: rgba(255, 204, 0, 0.15);
     border: 1px solid #ffcc00;
@@ -57,19 +59,20 @@ body {
     color: #fff;
 }
 
-/* Окно чата */
+/* ЧАТ */
+
 #chat-window {
     flex: 1;
     margin-top: 60px;
     margin-bottom: 0;
-    padding: 16px 16px 100px 16px;
-    overflow-y: auto !important;
+    padding: 16px 16px 110px 16px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 12px;
     min-height: 0;
-    -webkit-overflow-scrolling: touch !important;
-    scroll-padding-bottom: 100px;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-bottom: 110px;
     position: relative;
     z-index: 1;
 }
@@ -79,13 +82,15 @@ body {
     border-radius: 20px;
     max-width: 78%;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     font-size: 15px;
     line-height: 1.4;
     display: block;
     clear: both;
 }
 
-/* Панель ввода */
+/* ПАНЕЛЬ ВВОДА */
+
 #input-panel {
     position: fixed;
     bottom: 0;
@@ -134,8 +139,9 @@ body {
     width: 100%;
 }
 
+
 /* =========================
-   ТЕМА iOS
+   iOS
    ========================= */
 
 html[data-theme="ios"] body {
@@ -194,7 +200,7 @@ html[data-theme="ios"] #send-btn {
 
 
 /* =========================
-   ТЕМА ПРОСТОЙ
+   ПРОСТОЙ
    ========================= */
 
 html[data-theme="cyberpunk"] body {
@@ -259,7 +265,7 @@ html[data-theme="cyberpunk"] #send-btn {
 
 
 /* =========================
-   ТЕМА WINDOWS
+   WINDOWS
    ========================= */
 
 html[data-theme="microsoft"] body {
