@@ -45,7 +45,7 @@ def ask():
         }
 
         payload = {
-            "model": "deepseek/deepseek-chat-v3-0324:free",
+            "model": "openrouter/free",
             "messages": [
                 {
                     "role": "system",
