@@ -15,6 +15,7 @@ body {
     overflow: hidden;
 }
 
+
 /* =========================
    ШАПКА
    ========================= */
@@ -25,9 +26,11 @@ body {
     width: 100%;
     height: 60px;
     z-index: 100;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     padding: 0 16px;
 }
 
@@ -41,7 +44,10 @@ body {
     margin-top: 1px;
 }
 
-/* КОНТРОЛЫ СПРАВА */
+
+/* =========================
+   КОНТРОЛЫ СПРАВА
+   ========================= */
 
 .header-controls {
     display: flex;
@@ -49,27 +55,37 @@ body {
     gap: 8px;
 }
 
+
 /* =========================
-   МЕНЮ ДИЗАЙНА
+   ВЫБОР ДИЗАЙНА
    ========================= */
 
 .theme-select {
+    appearance: auto;
+    -webkit-appearance: auto;
+
     background: rgba(255, 204, 0, 0.15);
+
     border: 1px solid #ffcc00;
     color: #ffcc00;
+
     padding: 5px 10px;
     border-radius: 8px;
+
     font-size: 13px;
     font-weight: 600;
+
     outline: none;
     cursor: pointer;
+
     z-index: 105;
 }
 
 .theme-select option {
     background: #1c1c1e;
-    color: #fff;
+    color: #ffffff;
 }
+
 
 /* =========================
    ПЕРЕКЛЮЧАТЕЛЬ ПОЛЯ ВВОДА
@@ -77,10 +93,14 @@ body {
 
 .input-switch {
     position: relative;
+
     display: inline-block;
+
     width: 38px;
     height: 22px;
+
     flex-shrink: 0;
+
     cursor: pointer;
 }
 
@@ -92,21 +112,31 @@ body {
 
 .switch-slider {
     position: absolute;
+
     inset: 0;
+
     background: #3a3a3c;
+
     border-radius: 999px;
+
     transition: 0.2s ease;
 }
 
 .switch-slider::before {
     content: "";
+
     position: absolute;
+
     width: 18px;
     height: 18px;
+
     left: 2px;
     top: 2px;
+
     background: #ffffff;
+
     border-radius: 50%;
+
     transition: 0.2s ease;
 }
 
@@ -118,33 +148,178 @@ body {
     transform: translateX(16px);
 }
 
+
 /* =========================
    ЧАТ
    ========================= */
 
 #chat-window {
     flex: 1;
+
     margin-top: 60px;
     margin-bottom: 0;
+
     padding: 16px 16px 110px 16px;
+
     overflow-y: auto;
+
     display: flex;
     flex-direction: column;
+
     gap: 12px;
+
     min-height: 0;
+
     -webkit-overflow-scrolling: touch;
+
     scroll-padding-bottom: 110px;
+
     position: relative;
     z-index: 1;
 }
 
-/* Когда поле ввода скрыто */
+
+/* Когда поле ввода выключено */
+
 body.input-off #chat-window {
     padding-bottom: 16px;
     scroll-padding-bottom: 16px;
 }
 
+
+/* =========================
+   СООБЩЕНИЯ
+   ========================= */
+
 .message {
     padding: 10px 16px;
+
     border-radius: 20px;
-    max-width: 78
+
+    max-width: 78%;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    font-size: 15px;
+    line-height: 1.4;
+
+    display: block;
+    clear: both;
+}
+
+
+/* =========================
+   ПАНЕЛЬ ВВОДА
+   ========================= */
+
+#input-panel {
+    position: fixed;
+
+    bottom: 0;
+
+    width: 100%;
+    height: 75px;
+
+    padding: 10px 12px 25px 12px;
+
+    z-index: 100;
+}
+
+
+/* Скрытие панели */
+
+#input-panel.input-hidden {
+    display: none !important;
+}
+
+
+/* Само поле */
+
+.input-container {
+    display: flex;
+
+    border-radius: 22px;
+
+    padding: 4px 4px 4px 16px;
+
+    align-items: center;
+
+    width: 100%;
+    height: 36px;
+}
+
+#user-input {
+    flex: 1;
+
+    border: none;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    outline: none;
+
+    font-size: 16px;
+
+    height: 100%;
+}
+
+
+/* Кнопка отправки */
+
+#send-btn {
+    width: 28px;
+    height: 28px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* Статус "Верити печатает..." */
+
+.system-status {
+    background-color: transparent !important;
+
+    color: #8e8e93 !important;
+
+    font-size: 13px;
+
+    align-self: center;
+
+    text-align: center;
+
+    width: 100%;
+}
+
+
+/* =========================
+   iOS
+   ========================= */
+
+html[data-theme="ios"] body {
+    background: #000000;
+}
+
+html[data-theme="ios"] .main-header {
+    background: rgba(20, 20, 20, 0.75);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border-bottom: 0.5px solid #2c2c2e;
+}
+
+html[data-theme="ios"] .header-info h1 {
+    color: #ffcc00;
+}
+
+html[data-theme="ios
