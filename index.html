@@ -1,4 +1,5 @@
 <html lang="ru" data-theme="ios" data-color="yellow">
+
 <head>
     <meta charset="UTF-8">
 
@@ -14,6 +15,7 @@
 
 <body>
 
+    <!-- ШАПКА -->
     <div class="main-header">
 
         <div class="header-info">
@@ -23,7 +25,7 @@
 
         <div class="header-controls">
 
-            <!-- ДИЗАЙН -->
+            <!-- ВЫБОР ДИЗАЙНА -->
             <select
                 class="theme-select"
                 onchange="changeTheme(this.value)"
@@ -33,7 +35,7 @@
                 <option value="microsoft">Дизайн: Windows</option>
             </select>
 
-            <!-- ЦВЕТ -->
+            <!-- ВЫБОР ЦВЕТА -->
             <select
                 class="color-select"
                 onchange="changeColor(this.value)"
@@ -63,9 +65,9 @@
     </div>
 
 
+    <!-- ЧАТ -->
     <div id="chat-window">
 
-        <!-- ПЕРВОЕ СООБЩЕНИЕ -->
         <div class="message bot">
             Че надо, бездарь? Спрашивай свою глупость, я жду.
         </div>
@@ -73,6 +75,7 @@
     </div>
 
 
+    <!-- ПОЛЕ ВВОДА -->
     <div id="input-panel">
 
         <div class="input-container">
@@ -102,34 +105,49 @@
 
     <script>
 
-        const chatWindow = document.getElementById('chat-window');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
+        const chatWindow =
+            document.getElementById('chat-window');
 
-        const inputPanel = document.getElementById('input-panel');
-        const inputToggle = document.getElementById('input-toggle');
+        const userInput =
+            document.getElementById('user-input');
+
+        const sendBtn =
+            document.getElementById('send-btn');
+
+        const inputPanel =
+            document.getElementById('input-panel');
+
+        const inputToggle =
+            document.getElementById('input-toggle');
 
 
         /* =========================
            СМЕНА ДИЗАЙНА
            ========================= */
 
-        function changeTheme(t) {
+        function changeTheme(theme) {
 
             document.documentElement.setAttribute(
                 'data-theme',
-                t
+                theme
             );
 
             const title =
                 document.getElementById('header-title');
 
-            title.innerText =
-                t === 'ios'
-                    ? "Верити"
-                    : t === 'cyberpunk'
-                    ? "ВЕРИТИ // ПРОСТОЙ"
-                    : "Верити OS";
+            if (theme === 'ios') {
+
+                title.innerText = 'Верити';
+
+            } else if (theme === 'cyberpunk') {
+
+                title.innerText = 'ВЕРИТИ // ПРОСТОЙ';
+
+            } else {
+
+                title.innerText = 'Верити OS';
+
+            }
 
             scrollToBottom();
         }
@@ -150,12 +168,13 @@
 
 
         /* =========================
-           ПОЛЕ ВВОДА
+           ПОКАЗАТЬ / СКРЫТЬ ПОЛЕ
            ========================= */
 
         function toggleInput() {
 
-            const hidden = !inputToggle.checked;
+            const hidden =
+                !inputToggle.checked;
 
             inputPanel.classList.toggle(
                 'input-hidden',
@@ -172,7 +191,7 @@
 
 
         /* =========================
-           СКРОЛЛ
+           СКРОЛЛ ВНИЗ
            ========================= */
 
         function scrollToBottom() {
@@ -224,7 +243,7 @@
 
 
         /* =========================
-           ОТПРАВКА
+           ОТПРАВКА СООБЩЕНИЯ
            ========================= */
 
         async function sendMessage() {
@@ -232,9 +251,12 @@
             const text =
                 userInput.value.trim();
 
-            if (!text) return;
+            if (!text) {
+                return;
+            }
 
 
+            // Сообщение пользователя
             appendMessage(
                 text,
                 'user'
@@ -243,9 +265,10 @@
             userInput.value = '';
 
 
+            // "Верити печатает..."
             const typing =
                 appendMessage(
-                    "Верити печатает...",
+                    'Верити печатает...',
                     'bot',
                     true
                 );
@@ -275,25 +298,32 @@
                     await response.json();
 
 
+                // Убираем статус
                 typing.classList.remove(
                     'system-status'
                 );
 
+
+                // Ответ Верити
                 typing.innerText =
-                    data.reply;
+                    data.reply ||
+                    'Модель не прислала ответ 😭';
 
 
                 scrollToBottom();
 
 
-            } catch {
+            } catch (error) {
+
+                console.error(error);
 
                 typing.classList.remove(
                     'system-status'
                 );
 
                 typing.innerText =
-                    "Ошибка соединения.";
+                    'Ошибка соединения.';
+
 
                 scrollToBottom();
 
@@ -302,4 +332,45 @@
         }
 
 
-        sendBtn
+        /* =========================
+           КНОПКА ОТПРАВКИ
+           ========================= */
+
+        sendBtn.addEventListener(
+            'click',
+            sendMessage
+        );
+
+
+        /* =========================
+           ENTER
+           ========================= */
+
+        userInput.addEventListener(
+            'keydown',
+            function(event) {
+
+                if (event.key === 'Enter') {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           СТАРТОВОЕ СОСТОЯНИЕ
+           ========================= */
+
+        changeTheme('ios');
+
+        changeColor('yellow');
+
+    </script>
+
+</body>
+</html>
