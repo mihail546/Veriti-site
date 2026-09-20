@@ -14,11 +14,20 @@
             <div class="status">онлайн</div>
         </div>
 
-        <select class="theme-select" onchange="changeTheme(this.value)">
-            <option value="ios">Дизайн: iOS</option>
-            <option value="cyberpunk">Дизайн: Простой</option>
-            <option value="microsoft">Дизайн: Windows</option>
-        </select>
+        <div class="header-controls">
+
+            <select class="theme-select" onchange="changeTheme(this.value)">
+                <option value="ios">Дизайн: iOS</option>
+                <option value="cyberpunk">Дизайн: Простой</option>
+                <option value="microsoft">Дизайн: Windows</option>
+            </select>
+
+            <label class="input-switch">
+                <input type="checkbox" id="input-toggle" checked onchange="toggleInput()">
+                <span class="switch-slider"></span>
+            </label>
+
+        </div>
     </div>
 
     <div id="chat-window">
@@ -29,6 +38,7 @@
 
     <div id="input-panel">
         <div class="input-container">
+
             <input
                 type="text"
                 id="user-input"
@@ -44,6 +54,7 @@
                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
                 </svg>
             </button>
+
         </div>
     </div>
 
@@ -51,6 +62,8 @@
         const chatWindow = document.getElementById('chat-window');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
+        const inputPanel = document.getElementById('input-panel');
+        const inputToggle = document.getElementById('input-toggle');
 
         function changeTheme(t) {
             document.documentElement.setAttribute('data-theme', t);
@@ -64,9 +77,17 @@
                     ? "ВЕРИТИ // ПРОСТОЙ"
                     : "Верити OS";
 
-            setTimeout(() => {
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }, 50);
+            scrollToBottom();
+        }
+
+        function toggleInput() {
+            if (inputToggle.checked) {
+                inputPanel.classList.remove('input-hidden');
+            } else {
+                inputPanel.classList.add('input-hidden');
+            }
+
+            scrollToBottom();
         }
 
         function scrollToBottom() {
@@ -123,13 +144,6 @@
                 typing.classList.remove('system-status');
                 typing.innerText = d.reply;
 
-                /*
-                 * ВАЖНО:
-                 * после появления настоящего ответа
-                 * снова прокручиваем чат вниз.
-                 * Именно это исправляет текст,
-                 * который залезал под поле ввода.
-                 */
                 scrollToBottom();
 
             } catch {
