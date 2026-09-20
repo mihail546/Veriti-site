@@ -7,10 +7,12 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #000000;
-    color: #ffffff;
+    background: #000;
+    color: #fff;
+
     display: flex;
     flex-direction: column;
+
     height: 100vh;
     overflow: hidden;
 }
@@ -22,9 +24,13 @@ body {
 
 .main-header {
     position: fixed;
+
     top: 0;
+    left: 0;
+
     width: 100%;
     height: 60px;
+
     z-index: 100;
 
     display: flex;
@@ -46,13 +52,13 @@ body {
 
 
 /* =========================
-   КОНТРОЛЫ СПРАВА
+   КНОПКИ СПРАВА
    ========================= */
 
 .header-controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
 }
 
 
@@ -60,35 +66,38 @@ body {
    ВЫБОР ДИЗАЙНА
    ========================= */
 
-.theme-select {
+.theme-select,
+.color-select {
     appearance: auto;
     -webkit-appearance: auto;
 
     background: rgba(255, 204, 0, 0.15);
 
     border: 1px solid #ffcc00;
+
     color: #ffcc00;
 
-    padding: 5px 10px;
+    padding: 5px 8px;
+
     border-radius: 8px;
 
     font-size: 13px;
     font-weight: 600;
 
     outline: none;
-    cursor: pointer;
 
-    z-index: 105;
+    cursor: pointer;
 }
 
-.theme-select option {
+.theme-select option,
+.color-select option {
     background: #1c1c1e;
-    color: #ffffff;
+    color: #fff;
 }
 
 
 /* =========================
-   ПЕРЕКЛЮЧАТЕЛЬ ПОЛЯ ВВОДА
+   ПЕРЕКЛЮЧАТЕЛЬ
    ========================= */
 
 .input-switch {
@@ -99,13 +108,12 @@ body {
     width: 38px;
     height: 22px;
 
-    flex-shrink: 0;
-
     cursor: pointer;
 }
 
 .input-switch input {
     opacity: 0;
+
     width: 0;
     height: 0;
 }
@@ -119,7 +127,7 @@ body {
 
     border-radius: 999px;
 
-    transition: 0.2s ease;
+    transition: 0.2s;
 }
 
 .switch-slider::before {
@@ -133,11 +141,11 @@ body {
     left: 2px;
     top: 2px;
 
-    background: #ffffff;
+    background: #fff;
 
     border-radius: 50%;
 
-    transition: 0.2s ease;
+    transition: 0.2s;
 }
 
 .input-switch input:checked + .switch-slider {
@@ -157,9 +165,12 @@ body {
     flex: 1;
 
     margin-top: 60px;
-    margin-bottom: 0;
 
-    padding: 16px 16px 110px 16px;
+    padding:
+        16px
+        16px
+        110px
+        16px;
 
     overflow-y: auto;
 
@@ -179,20 +190,12 @@ body {
 }
 
 
-/* Когда поле ввода выключено */
-
-body.input-off #chat-window {
-    padding-bottom: 16px;
-    scroll-padding-bottom: 16px;
-}
-
-
 /* =========================
-   СООБЩЕНИЯ
+   ОБОЛОЧКИ СООБЩЕНИЙ
    ========================= */
 
 .message {
-    padding: 10px 16px;
+    padding: 10px 15px;
 
     border-radius: 20px;
 
@@ -205,7 +208,111 @@ body.input-off #chat-window {
     line-height: 1.4;
 
     display: block;
-    clear: both;
+
+    position: relative;
+}
+
+
+/* Пользователь */
+
+.message.user {
+    align-self: flex-end;
+
+    border-bottom-right-radius: 5px;
+
+    background: #2c2c2e;
+    color: #fff;
+}
+
+
+/* Верити */
+
+.message.bot {
+    align-self: flex-start;
+
+    border-bottom-left-radius: 5px;
+
+    color: #000;
+
+    font-weight: 500;
+}
+
+
+/* =========================
+   ЦВЕТА ВЕРИТИ
+   ========================= */
+
+/* ЖЁЛТЫЙ */
+
+html[data-color="yellow"] .message.bot {
+    background: #ffcc00;
+}
+
+html[data-color="yellow"] .theme-select,
+html[data-color="yellow"] .color-select {
+    border-color: #ffcc00;
+    color: #ffcc00;
+}
+
+html[data-color="yellow"] .input-switch input:checked + .switch-slider {
+    background: #ffcc00;
+}
+
+
+/* СИНИЙ */
+
+html[data-color="blue"] .message.bot {
+    background: #0a84ff;
+    color: #fff;
+}
+
+html[data-color="blue"] .theme-select,
+html[data-color="blue"] .color-select {
+    border-color: #0a84ff;
+    color: #0a84ff;
+}
+
+html[data-color="blue"] .input-switch input:checked + .switch-slider {
+    background: #0a84ff;
+}
+
+
+/* ЗЕЛЁНЫЙ */
+
+html[data-color="green"] .message.bot {
+    background: #30d158;
+    color: #000;
+}
+
+html[data-color="green"] .theme-select,
+html[data-color="green"] .color-select {
+    border-color: #30d158;
+    color: #30d158;
+}
+
+html[data-color="green"] .input-switch input:checked + .switch-slider {
+    background: #30d158;
+}
+
+
+/* =========================
+   СТАТУС "ПЕЧАТАЕТ"
+   ========================= */
+
+.system-status {
+    background: transparent !important;
+
+    color: #8e8e93 !important;
+
+    font-size: 13px;
+
+    align-self: center !important;
+
+    text-align: center;
+
+    width: 100%;
+
+    max-width: 100%;
 }
 
 
@@ -221,48 +328,51 @@ body.input-off #chat-window {
     width: 100%;
     height: 75px;
 
-    padding: 10px 12px 25px 12px;
+    padding: 10px 12px 25px;
 
     z-index: 100;
 }
-
-
-/* Скрытие панели */
 
 #input-panel.input-hidden {
     display: none !important;
 }
 
+body.input-off #chat-window {
+    padding-bottom: 16px;
 
-/* Само поле */
+    scroll-padding-bottom: 16px;
+}
+
+
+/* Поле */
 
 .input-container {
     display: flex;
-
-    border-radius: 22px;
-
-    padding: 4px 4px 4px 16px;
 
     align-items: center;
 
     width: 100%;
     height: 36px;
+
+    padding: 4px 4px 4px 16px;
+
+    border-radius: 22px;
 }
 
 #user-input {
     flex: 1;
 
+    height: 100%;
+
     border: none;
 
     background: transparent;
 
-    color: #ffffff;
+    color: #fff;
 
     outline: none;
 
     font-size: 16px;
-
-    height: 100%;
 }
 
 
@@ -284,29 +394,12 @@ body.input-off #chat-window {
 }
 
 
-/* Статус "Верити печатает..." */
-
-.system-status {
-    background-color: transparent !important;
-
-    color: #8e8e93 !important;
-
-    font-size: 13px;
-
-    align-self: center;
-
-    text-align: center;
-
-    width: 100%;
-}
-
-
 /* =========================
    iOS
    ========================= */
 
 html[data-theme="ios"] body {
-    background: #000000;
+    background: #000;
 }
 
 html[data-theme="ios"] .main-header {
@@ -319,7 +412,177 @@ html[data-theme="ios"] .main-header {
 }
 
 html[data-theme="ios"] .header-info h1 {
+    color: #fff;
+}
+
+html[data-theme="ios"] .header-info .status {
+    color: #8e8e93;
+}
+
+html[data-theme="ios"] #chat-window {
+    background: #121212;
+}
+
+html[data-theme="ios"] .message.user {
+    background: #2c2c2e;
+}
+
+html[data-theme="ios"] #input-panel {
+    background: rgba(20, 20, 20, 0.85);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border-top: 0.5px solid #2c2c2e;
+}
+
+html[data-theme="ios"] .input-container {
+    background: #1c1c1e;
+
+    border: 0.5px solid #2c2c2e;
+}
+
+html[data-theme="ios"] #send-btn {
+    color: #000;
+}
+
+
+/* =========================
+   ПРОСТОЙ
+   ========================= */
+
+html[data-theme="cyberpunk"] body {
+    background: #121212;
+}
+
+html[data-theme="cyberpunk"] .main-header {
+    background: #1e1e1e;
+
+    border-bottom: 2px solid #ffcc00;
+}
+
+html[data-theme="cyberpunk"] .header-info h1 {
+    color: #ffcc00;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+html[data-theme="cyberpunk"] .header-info .status {
     color: #ffcc00;
 }
 
-html[data-theme="ios
+html[data-theme="cyberpunk"] #chat-window {
+    background: #1a1a1a;
+}
+
+html[data-theme="cyberpunk"] .message {
+    border-radius: 6px;
+
+    border: 1px solid #333;
+}
+
+html[data-theme="cyberpunk"] .message.user {
+    background: #262626;
+
+    border-right: 3px solid #555;
+}
+
+html[data-theme="cyberpunk"] #input-panel {
+    background: #1e1e1e;
+
+    border-top: 2px solid #ffcc00;
+}
+
+html[data-theme="cyberpunk"] .input-container {
+    background: #121212;
+
+    border: 1px solid #ffcc00;
+
+    border-radius: 4px;
+}
+
+html[data-theme="cyberpunk"] #send-btn {
+    border-radius: 4px;
+}
+
+
+/* =========================
+   WINDOWS
+   ========================= */
+
+html[data-theme="microsoft"] body {
+    background: #0b0f19;
+}
+
+html[data-theme="microsoft"] .main-header {
+    background: rgba(15, 23, 42, 0.85);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="microsoft"] .header-info h1 {
+    color: #fff;
+
+    font-weight: 400;
+}
+
+html[data-theme="microsoft"] .header-info .status {
+    color: #38bdf8;
+}
+
+html[data-theme="microsoft"] #chat-window {
+    background: #0f172a;
+}
+
+html[data-theme="microsoft"] .message {
+    border-radius: 8px;
+
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="microsoft"] .message.user {
+    background: #1e293b;
+}
+
+html[data-theme="microsoft"] #input-panel {
+    background: #0f172a;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="microsoft"] .input-container {
+    background: #1e293b;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    border-radius: 6px;
+}
+
+html[data-theme="microsoft"] #send-btn {
+    border-radius: 4px;
+}
+
+
+/* =========================
+   ЦВЕТ КНОПКИ ОТПРАВКИ
+   ========================= */
+
+html[data-color="yellow"] #send-btn {
+    background: #ffcc00;
+    color: #000;
+}
+
+html[data-color="blue"] #send-btn {
+    background: #0a84ff;
+    color: #fff;
+}
+
+html[data-color="green"] #send-btn {
+    background: #30d158;
+    color: #000;
+}
