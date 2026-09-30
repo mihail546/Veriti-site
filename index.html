@@ -1,376 +1,468 @@
-<html lang="ru" data-theme="ios" data-color="yellow">
+<!DOCTYPE html><html lang="ru" data-theme="ios" data-color="yellow"><head>
+    <meta charset="UTF-8"><meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
 
-<head>
-    <meta charset="UTF-8">
+<title>Верити</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
+<link rel="stylesheet" href="/static/style.css">
 
-    <title>Верити</title>
+<style>
+    .thinking-toggle {
+        display: block;
+        margin-top: 7px;
+        padding: 6px 11px;
+        border: 1px solid #777;
+        border-radius: 12px;
+        background: #292929;
+        color: #fff;
+        font-size: 12px;
+        cursor: pointer;
+    }
 
-    <link rel="stylesheet" href="/static/style.css">
-</head>
+    .thinking-toggle:active {
+        opacity: 0.7;
+    }
 
-<body>
+    .thinking-box {
+        display: none;
+        margin-top: 7px;
+        padding: 10px;
+        border-radius: 12px;
+        background: #242424;
+        color: #ddd;
+        font-size: 13px;
+        line-height: 1.4;
+        white-space: pre-wrap;
+    }
 
-    <!-- ШАПКА -->
-    <div class="main-header">
+    .thinking-box.open {
+        display: block;
+    }
 
-        <div class="header-info">
-            <h1 id="header-title">Верити</h1>
-            <div class="status">онлайн</div>
-        </div>
+    .bot-response {
+        max-width: 78%;
+        align-self: flex-start;
+    }
 
-        <div class="header-controls">
+    .bot-response .message {
+        max-width: 100%;
+    }
+</style>
 
-            <!-- ВЫБОР ДИЗАЙНА -->
-            <select
-                class="theme-select"
-                onchange="changeTheme(this.value)"
-            >
-                <option value="ios">Дизайн: iOS</option>
-                <option value="cyberpunk">Дизайн: Простой</option>
-                <option value="microsoft">Дизайн: Windows</option>
-            </select>
+</head><body><div class="main-header">
 
-            <!-- ВЫБОР ЦВЕТА -->
-            <select
-                class="color-select"
-                onchange="changeColor(this.value)"
-            >
-                <option value="yellow">🟡</option>
-                <option value="blue">🔵</option>
-                <option value="green">🟢</option>
-            </select>
-
-            <!-- ПЕРЕКЛЮЧАТЕЛЬ ПОЛЯ ВВОДА -->
-            <label
-                class="input-switch"
-                title="Показывать поле ввода"
-            >
-                <input
-                    type="checkbox"
-                    id="input-toggle"
-                    checked
-                    onchange="toggleInput()"
-                >
-
-                <span class="switch-slider"></span>
-            </label>
-
-        </div>
-
+    <div class="header-info">
+        <h1 id="header-title">Верити</h1>
+        <div class="status">онлайн</div>
     </div>
 
+    <div class="header-controls">
 
-    <!-- ЧАТ -->
-    <div id="chat-window">
+        <select
+            class="theme-select"
+            onchange="changeTheme(this.value)"
+        >
+            <option value="ios">Дизайн: iOS</option>
+            <option value="cyberpunk">Дизайн: Простой</option>
+            <option value="microsoft">Дизайн: Windows</option>
+        </select>
 
-        <div class="message bot">
-            Че надо, бездарь? Спрашивай свою глупость, я жду.
-        </div>
+        <select
+            class="color-select"
+            onchange="changeColor(this.value)"
+        >
+            <option value="yellow">🟡</option>
+            <option value="blue">🔵</option>
+            <option value="green">🟢</option>
+        </select>
 
-    </div>
-
-
-    <!-- ПОЛЕ ВВОДА -->
-    <div id="input-panel">
-
-        <div class="input-container">
-
+        <label
+            class="input-switch"
+            title="Показывать поле ввода"
+        >
             <input
-                type="text"
-                id="user-input"
-                placeholder="Напиши что-нибудь..."
-                autocomplete="off"
+                type="checkbox"
+                id="input-toggle"
+                checked
+                onchange="toggleInput()"
             >
+            <span class="switch-slider"></span>
+        </label>
 
-            <button id="send-btn">
+    </div>
+</div>
 
-                <svg
-                    viewBox="0 0 24 24"
-                    style="width:16px; height:16px; fill:currentColor;"
-                >
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-                </svg>
 
-            </button>
+<div id="chat-window">
 
-        </div>
+    <div class="message bot">
+        Че надо, бездарь? Спрашивай свою глупость, я жду.
+    </div>
+
+</div>
+
+
+<div id="input-panel">
+
+    <div class="input-container">
+
+        <input
+            type="text"
+            id="user-input"
+            placeholder="Напиши что-нибудь..."
+            autocomplete="off"
+        >
+
+        <button id="send-btn">
+
+            <svg
+                viewBox="0 0 24 24"
+                style="width:16px;height:16px;fill:currentColor;"
+            >
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z">
+                </path>
+            </svg>
+
+        </button>
 
     </div>
 
-
-    <script>
-
-        const chatWindow =
-            document.getElementById('chat-window');
-
-        const userInput =
-            document.getElementById('user-input');
-
-        const sendBtn =
-            document.getElementById('send-btn');
-
-        const inputPanel =
-            document.getElementById('input-panel');
-
-        const inputToggle =
-            document.getElementById('input-toggle');
+</div>
 
 
-        /* =========================
-           СМЕНА ДИЗАЙНА
-           ========================= */
+<script>
 
-        function changeTheme(theme) {
+    const chatWindow =
+        document.getElementById('chat-window');
 
-            document.documentElement.setAttribute(
-                'data-theme',
-                theme
-            );
+    const userInput =
+        document.getElementById('user-input');
 
-            const title =
-                document.getElementById('header-title');
+    const sendBtn =
+        document.getElementById('send-btn');
 
-            if (theme === 'ios') {
+    const inputPanel =
+        document.getElementById('input-panel');
 
-                title.innerText = 'Верити';
-
-            } else if (theme === 'cyberpunk') {
-
-                title.innerText = 'ВЕРИТИ // ПРОСТОЙ';
-
-            } else {
-
-                title.innerText = 'Верити OS';
-
-            }
-
-            scrollToBottom();
-        }
+    const inputToggle =
+        document.getElementById('input-toggle');
 
 
-        /* =========================
-           СМЕНА ЦВЕТА
-           ========================= */
+    function changeTheme(theme) {
 
-        function changeColor(color) {
+        document.documentElement
+            .setAttribute('data-theme', theme);
 
-            document.documentElement.setAttribute(
-                'data-color',
-                color
-            );
+        const title =
+            document.getElementById('header-title');
+
+        if (theme === 'ios') {
+
+            title.innerText = 'Верити';
+
+        } else if (theme === 'cyberpunk') {
+
+            title.innerText = 'ВЕРИТИ // ПРОСТОЙ';
+
+        } else {
+
+            title.innerText = 'Верити OS';
 
         }
 
-
-        /* =========================
-           ПОКАЗАТЬ / СКРЫТЬ ПОЛЕ
-           ========================= */
-
-        function toggleInput() {
-
-            const hidden =
-                !inputToggle.checked;
-
-            inputPanel.classList.toggle(
-                'input-hidden',
-                hidden
-            );
-
-            document.body.classList.toggle(
-                'input-off',
-                hidden
-            );
-
-            scrollToBottom();
-        }
+        scrollToBottom();
+    }
 
 
-        /* =========================
-           СКРОЛЛ ВНИЗ
-           ========================= */
+    function changeColor(color) {
 
-        function scrollToBottom() {
+        document.documentElement
+            .setAttribute('data-color', color);
 
-            setTimeout(() => {
-
-                chatWindow.scrollTop =
-                    chatWindow.scrollHeight;
-
-            }, 50);
-
-        }
+    }
 
 
-        /* =========================
-           ДОБАВЛЕНИЕ СООБЩЕНИЯ
-           ========================= */
+    function toggleInput() {
 
-        function appendMessage(
-            text,
-            sender,
-            isSystem = false
-        ) {
+        const hidden =
+            !inputToggle.checked;
 
-            const message =
-                document.createElement('div');
+        inputPanel.classList.toggle(
+            'input-hidden',
+            hidden
+        );
+
+        document.body.classList.toggle(
+            'input-off',
+            hidden
+        );
+
+        scrollToBottom();
+    }
+
+
+    function scrollToBottom() {
+
+        setTimeout(() => {
+
+            chatWindow.scrollTop =
+                chatWindow.scrollHeight;
+
+        }, 50);
+
+    }
+
+
+    function appendMessage(
+        text,
+        sender,
+        isSystem = false
+    ) {
+
+        const message =
+            document.createElement('div');
+
+        message.classList.add(
+            'message',
+            sender
+        );
+
+        if (isSystem) {
 
             message.classList.add(
-                'message',
-                sender
+                'system-status'
             );
 
-            if (isSystem) {
-
-                message.classList.add(
-                    'system-status'
-                );
-
-            }
-
-            message.innerText = text;
-
-            chatWindow.appendChild(message);
-
-            scrollToBottom();
-
-            return message;
         }
 
+        message.innerText = text;
 
-        /* =========================
-           ОТПРАВКА СООБЩЕНИЯ
-           ========================= */
+        chatWindow.appendChild(message);
 
-        async function sendMessage() {
+        scrollToBottom();
 
-            const text =
-                userInput.value.trim();
+        return message;
+    }
 
-            if (!text) {
+
+    // Создание объяснения без изменения app.py
+    function createExplanation(
+        userText,
+        botText
+    ) {
+
+        const shortUser =
+            userText.length > 100
+                ? userText.substring(0, 100) + '...'
+                : userText;
+
+        const shortBot =
+            botText.length > 160
+                ? botText.substring(0, 160) + '...'
+                : botText;
+
+        return (
+            'Верити получила сообщение: "' +
+            shortUser +
+            '"\n\n' +
+            'Ответ был сформирован на основе этого запроса.\n\n' +
+            'Ответ Верити: "' +
+            shortBot +
+            '"'
+        );
+    }
+
+
+    function addBotResponse(
+        text,
+        userText
+    ) {
+
+        const wrapper =
+            document.createElement('div');
+
+        wrapper.className =
+            'bot-response';
+
+
+        const message =
+            document.createElement('div');
+
+        message.className =
+            'message bot';
+
+        message.innerText = text;
+
+        wrapper.appendChild(message);
+
+
+        const button =
+            document.createElement('button');
+
+        button.className =
+            'thinking-toggle';
+
+        button.type = 'button';
+
+        button.innerText =
+            '🧠 Размышление';
+
+
+        const thinking =
+            document.createElement('div');
+
+        thinking.className =
+            'thinking-box';
+
+        thinking.innerText =
+            createExplanation(
+                userText,
+                text
+            );
+
+
+        button.addEventListener(
+            'click',
+            () => {
+
+                const opened =
+                    thinking.classList.toggle('open');
+
+                button.innerText =
+                    opened
+                        ? '🧠 Скрыть размышление'
+                        : '🧠 Размышление';
+
+                scrollToBottom();
+
+            }
+        );
+
+
+        wrapper.appendChild(button);
+
+        wrapper.appendChild(thinking);
+
+        chatWindow.appendChild(wrapper);
+
+        scrollToBottom();
+    }
+
+
+    async function sendMessage() {
+
+        const text =
+            userInput.value.trim();
+
+        if (!text) return;
+
+
+        appendMessage(
+            text,
+            'user'
+        );
+
+        userInput.value = '';
+
+
+        const typing =
+            appendMessage(
+                'Верити печатает...',
+                'bot',
+                true
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    '/ask',
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body:
+                            JSON.stringify({
+                                message: text
+                            })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            typing.remove();
+
+
+            if (!response.ok) {
+
+                appendMessage(
+                    data.reply ||
+                    'Ошибка сервера.',
+                    'bot'
+                );
+
                 return;
             }
 
 
-            // Сообщение пользователя
-            appendMessage(
-                text,
-                'user'
+            addBotResponse(
+                data.reply ||
+                'Модель не прислала ответ 😭',
+                text
             );
 
-            userInput.value = '';
+
+        } catch (error) {
+
+            console.error(error);
+
+            typing.remove();
+
+            appendMessage(
+                'Ошибка соединения.',
+                'bot'
+            );
+
+        }
+    }
 
 
-            // "Верити печатает..."
-            const typing =
-                appendMessage(
-                    'Верити печатает...',
-                    'bot',
-                    true
-                );
+    sendBtn.addEventListener(
+        'click',
+        sendMessage
+    );
 
 
-            try {
+    userInput.addEventListener(
+        'keydown',
+        function(event) {
 
-                const response =
-                    await fetch(
-                        '/ask',
-                        {
-                            method: 'POST',
+            if (event.key === 'Enter') {
 
-                            headers: {
-                                'Content-Type':
-                                    'application/json'
-                            },
+                event.preventDefault();
 
-                            body: JSON.stringify({
-                                message: text
-                            })
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                // Убираем статус
-                typing.classList.remove(
-                    'system-status'
-                );
-
-
-                // Ответ Верити
-                typing.innerText =
-                    data.reply ||
-                    'Модель не прислала ответ 😭';
-
-
-                scrollToBottom();
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                typing.classList.remove(
-                    'system-status'
-                );
-
-                typing.innerText =
-                    'Ошибка соединения.';
-
-
-                scrollToBottom();
+                sendMessage();
 
             }
 
         }
+    );
 
 
-        /* =========================
-           КНОПКА ОТПРАВКИ
-           ========================= */
+    changeTheme('ios');
+    changeColor('yellow');
 
-        sendBtn.addEventListener(
-            'click',
-            sendMessage
-        );
-
-
-        /* =========================
-           ENTER
-           ========================= */
-
-        userInput.addEventListener(
-            'keydown',
-            function(event) {
-
-                if (event.key === 'Enter') {
-
-                    event.preventDefault();
-
-                    sendMessage();
-
-                }
-
-            }
-        );
-
-
-        /* =========================
-           СТАРТОВОЕ СОСТОЯНИЕ
-           ========================= */
-
-        changeTheme('ios');
-
-        changeColor('yellow');
-
-    </script>
+</script>
 
 </body>
 </html>
